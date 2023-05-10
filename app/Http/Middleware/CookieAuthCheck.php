@@ -24,10 +24,10 @@ class CookieAuthCheck
         $cookie_user = json_decode(Cookie::get("curr_user"));
 
 
-        if ($cookie_exists && $cookie_user) {
+        if ($cookie_exists && ($cookie_user)) {
             $user = User::find($cookie_user->id);
-
             Auth::login($user);
+            // dd(Cookie::get("curr_user_verified"));
             return $next($request);
         }
 

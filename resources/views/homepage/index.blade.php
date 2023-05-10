@@ -19,10 +19,17 @@
                         <a data-scroll href="#gallery" class="btn btn-light btn-radius grd1 btn-brd">View Gallery</a>
                     </div>
                 </div>
+                @php
+                    $cookie_user = json_decode(\Illuminate\Support\Facades\Cookie::get('curr_user'));
+                    
+                @endphp
                 <div class="col-md-6 wow slideInRight hidden-xs hidden-sm">
                     <div class="contact_form">
                         {{-- {{ print_r(Session::all()) }} --}}
-                        <h3><i class="fa fa-envelope-o grd1 global-radius"></i> QUICK APPOINTMENT</h3>
+                        <h3><i class="fa fa-envelope-o grd1 global-radius"></i>
+                            {{ $cookie_user != '' ? 'QUICK APPOINTMENT' : 'Get The Details Now!' }}</h3>
+
+
                         <form id="contactform1" class="row" name="contactform" method="post"
                             action="{{ route('submit-property-access') }}">
                             @if ($errors->any())
@@ -38,21 +45,31 @@
                             <fieldset class="row">
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <input type="text" name="name1" id="first_name1" class="form-control"
-                                        placeholder="First Name" required>
+                                        placeholder="First Name" required {{ $cookie_user != '' ? 'read-only' : '' }}
+                                        {{ $cookie_user != '' ? 'read-only' : '' }}
+                                        value="{{ $cookie_user != '' ? $cookie_user->name : '' }}">
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                     <input type="email" name="email1" id="email1" class="form-control"
-                                        placeholder="Your Email" required>
+                                        placeholder="Your Email" required {{ $cookie_user != '' ? 'read-only' : '' }}
+                                        value="{{ $cookie_user != '' ? $cookie_user->email : '' }}">
                                 </div>
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mb-4">
                                     <input type="text" name="phone1" id="phone_number" class="form-control"
-                                        placeholder="Your Phone" required>
+                                        placeholder="Your Phone" required {{ $cookie_user != '' ? 'read-only' : '' }}
+                                        value="{{ $cookie_user != '' ? $cookie_user->phone_number : '' }}">
                                 </div>
+
                                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 text-center">
-                                    <button type="submit" value="SEND" id="submit1"
-                                        class="btn btn-light btn-radius btn-brd grd1 btn-block">Get Access to
-                                        Property</button>
+                                    @if ($cookie_user == '')
+                                        <button type="submit" value="SEND" id="submit1"
+                                            class="btn btn-light btn-radius btn-brd grd1 btn-block">Get Access to
+                                            Property</button>
+                                    @else
+                                        <a href="{{ route('property-details') }}">Show Details </a>
+                                    @endif
                                 </div>
+
                             </fieldset>
                         </form>
                     </div>
@@ -139,8 +156,7 @@
         var input = document.querySelector("#phone_number");
         window.intlTelInput(input, {
             separateDialCode: true,
-            excludeCountries: ["in", "il"],
-            preferredCountries: ["ru", "jp", "pk", "no"]
+            preferredCountries: ["us", "uk", "pk", "no"]
         });
 
         let form = document.querySelector("#contactform1")
